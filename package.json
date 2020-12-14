@@ -4,6 +4,7 @@
   "description": "",
   "main": "app.js",
   "scripts": {
+    "start": "node app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -18,5 +19,8 @@
     "express-session": "^1.17.1",
     "mysql": "^2.18.1",
     "nodemon": "^2.0.6"
+  },
+  "engines": {
+    "node": "14.15.0"
   }
 }

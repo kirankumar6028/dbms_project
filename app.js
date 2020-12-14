@@ -12,7 +12,7 @@ const sqlhelper = require("./database.js");
 
 var fs = require('fs');
 fs.readFile('./initialise.txt', 'utf8', function(err, data) {
-    console.log(data);
+    // console.log(data);
     pool.executeQuery(data, function(e, res) {
         if(!!e) console.log("Initialised");
     });
