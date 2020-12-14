@@ -1,63 +1,63 @@
 # USER TABLE
-CREATE TABLE IF NOT EXISTS USER (
-    USER_ID INT AUTO_INCREMENT PRIMARY KEY,
-    FNAME VARCHAR(20),
-    LNAME VARCHAR(20),
-    EMAIL VARCHAR(30),
-    PASSWORD VARCHAR(30),
-    CONTACT_NUMBER CHAR(10)
+CREATE TABLE IF NOT EXISTS user (
+    user_id INT AUTO_INCREMENT PRIMARY KEY,
+    fname VARCHAR(20),
+    lname VARCHAR(20),
+    email VARCHAR(30),
+    password VARCHAR(30),
+    contact_number CHAR(10)
 );
 
 
 # TRAVEL_AGENCY TABLE
-CREATE TABLE IF NOT EXISTS TRAVEL_AGENCY (
-    AGENCY_ID CHAR(5) PRIMARY KEY, 
-    AGENCY_NAME VARCHAR(30), 
-    LOCATION VARCHAR(30), 
-    EMAIL VARCHAR(30), 
-    CONTACT_NUMBER CHAR(10)
+CREATE TABLE IF NOT EXISTS travel_agency (
+    agency_id CHAR(5) PRIMARY KEY, 
+    agency_name VARCHAR(30), 
+    location VARCHAR(30), 
+    email VARCHAR(30), 
+    contact_number CHAR(10)
 );
 
 
 # BUS TABLE
-CREATE TABLE IF NOT EXISTS BUS (
-    BUS_NUMBER CHAR(6) PRIMARY KEY, 
-    SOURCE VARCHAR(20), 
-    DEPARTURE_TIME TIME, 
-    DESTINATION VARCHAR(20), 
-    ARRIVAL_TIME TIME, 
-    DURATION TIME AS (ARRIVAL_TIME - DEPARTURE_TIME), 
-    FARE INT, 
-    AGENCY_ID CHAR(5), 
-    SEATS_AVAILABLE INT, 
-    FOREIGN KEY (AGENCY_ID) REFERENCES TRAVEL_AGENCY(AGENCY_ID) ON DELETE CASCADE
+CREATE TABLE IF NOT EXISTS bus (
+    bus_number CHAR(6) PRIMARY KEY, 
+    source VARCHAR(20), 
+    depature_time TIME, 
+    destination VARCHAR(20), 
+    arrival_time TIME, 
+    duration TIME AS (arrival_time - depature_time), 
+    fare INT, 
+    agency_id CHAR(5), 
+    seats_available INT, 
+    FOREIGN KEY (agency_id) REFERENCES travel_agency(agency_id) ON DELETE CASCADE
 );
 
 
 # TOURS TABLE
-CREATE TABLE IF NOT EXISTS TOURS (
-    TOUR_ID CHAR(6) PRIMARY KEY, 
-    SOURCE VARCHAR(30), 
-    DESCRIPTION TEXT, 
-    IMAGES VARCHAR(50), 
-    NO_OF_DAYS INT, 
-    NO_OF_NIGHTS INT, 
-    PRICE INT, 
-    SEATS_AVAILABLE INT, 
-    START_DATE DATE
+CREATE TABLE IF NOT EXISTS tours (
+    tour_id CHAR(6) PRIMARY KEY, 
+    source VARCHAR(30), 
+    description TEXT, 
+    images VARCHAR(50), 
+    no_of_days INT, 
+    no_of_nights INT, 
+    price INT, 
+    seats_available INT, 
+    start_date DATE
 );
 
 
 # TICKETS TABLE
-CREATE TABLE IF NOT EXISTS TICKETS (
-    TICKET_ID CHAR(8) PRIMARY KEY, 
-    USER_ID INT, 
-    DATE_OF_BOOKING DATE, 
-    BUS_NUMBER CHAR(6), 
-    TOUR_ID CHAR(6), 
-    NO_OF_PEOPLE INT, 
-    TOTAL_PRICE INT,
-    FOREIGN KEY (USER_ID) REFERENCES USER (USER_ID) ON DELETE CASCADE,
-    FOREIGN KEY (TOUR_ID) REFERENCES TOURS (TOUR_ID) ON DELETE CASCADE,
-    FOREIGN KEY (BUS_NUMBER) REFERENCES BUS (BUS_NUMBER) ON DELETE CASCADE
+CREATE TABLE IF NOT EXISTS tickets (
+    ticket_id CHAR(8) PRIMARY KEY, 
+    user_id INT, 
+    date_of_booking DATE, 
+    bus_number CHAR(6), 
+    tour_id CHAR(6), 
+    no_of_people INT, 
+    total_price INT,
+    FOREIGN KEY (user_id) REFERENCES user (user_id) ON DELETE CASCADE,
+    FOREIGN KEY (tour_id) REFERENCES tours (tour_id) ON DELETE CASCADE,
+    FOREIGN KEY (bus_number) REFERENCES bus (bus_number) ON DELETE CASCADE
 );
