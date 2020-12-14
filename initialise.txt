@@ -48,6 +48,15 @@ CREATE TABLE IF NOT EXISTS tours (
 );
 
 
+# TOUR LOCATIONS TABLE
+CREATE TABLE IF NOT EXISTS tour_locations (
+    tour_id CHAR(6), 
+    locations VARCHAR(30), 
+    PRIMARY KEY (tour_id, locations),
+    FOREIGN KEY (tour_id) REFERENCES tours (tour_id) ON DELETE CASCADE
+);
+
+
 # TICKETS TABLE
 CREATE TABLE IF NOT EXISTS tickets (
     ticket_id CHAR(8) PRIMARY KEY, 
