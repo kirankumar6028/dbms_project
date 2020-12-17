@@ -7,6 +7,7 @@ const flash = require("connect-flash");
 const pool = require("./config.js");
 const sqlhelper = require("./database.js");
 
+require('events').EventEmitter.defaultMaxListeners = 20;
 
 
 const app = express();
@@ -75,9 +76,6 @@ app.post("/login", (req, res) => {
                 pool.executeQuery(sql, function(e, travel_agency) {
                     bus = sqlhelper.getDateHelper(bus, ["x"]);
                     tour = sqlhelper.getDateHelper(tour, ["x"]);
-                    console.log(bus);
-                    console.log(tour);
-                    console.log(travel_agency)
                     res.render("adminHomePage", {bus, tour, travel_agency});
                 });
             });
@@ -102,7 +100,6 @@ app.post("/login", (req, res) => {
                 var sql = sqlhelper.selectCommand("tours", null, 
                                 "start_date>'" + today + "' order by price desc limit 3");
                 pool.executeQuery(sql, function(err, tours) {
-                   console.log(tours);
                     res.render("homePage", {userData, username, tours});
                 });
 
@@ -290,7 +287,6 @@ app.get("/addBus", (req, res) => {
         // select agency_id, agency_name from travel_agency
         var sql = sqlhelper.selectCommand("travel_agency", ["agency_id", "agency_name"]);
         pool.executeQuery(sql, function(err, agency) {
-           // console.log(agency);
             res.render("addBusForm", {data, agency});
         });
     });
@@ -309,7 +305,6 @@ app.get("/addTours", (req, res) => {
                                 "t.tour_id=l.tour_id group by l.tour_id");
     console.log(sql);
     pool.executeQuery(sql, function(err, data) {
-       console.log(data);
        data = sqlhelper.getShortenedDate(data, ["extra"]);
        data = sqlhelper.getDateHelper(data, ["start_date"]);
         res.render("addToursForm", {data});
@@ -338,7 +333,6 @@ app.get("/addAgency", (req, res) => {
 
 app.post("/addBus", (req, res) => {
     const  {agencyId, source, destination, departureTime, arraivalTime, price, seats_available} = req.body;
-    console.log(agencyId);
     
     var busNo = agencyId.slice(0,3).toUpperCase() + Number(Math.floor(Math.random() * 899) + 101);
     // insert into bus  values ('HYD781', 'hbhjbh', '02:00', 'gcgjvg', '08:00', 89, 'HYD45', 8);

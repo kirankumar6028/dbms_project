@@ -3,8 +3,8 @@ var mysql = require("mysql");
 var pool = mysql.createPool({
     host: "localhost",
     user: "root",
-    password: "9380537486",
-    database: "dbms_project",
+    password: "123",
+    database: "project",
     multipleStatements: true
 });
 
@@ -20,7 +20,7 @@ module.exports = {
                     connection.release();
                     if(!!err) console.log("Error executing " + err);
                     else {
-                        console.log("Query Executed");
+                        console.log("Query Executed\n");
                         callback(null, rows);
                     }
                 });
