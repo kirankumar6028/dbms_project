@@ -86,6 +86,17 @@ module.exports = {
             });
         });
         return result;
+    },
+
+
+    replaceNullValue: function (result, data_type) {
+        result.forEach(element => {
+            data_type.forEach(i => {
+                if (element[i] == null) return;
+                if (element[i] == 'NULL') element[i] = '';
+            })
+        })
+        return result;
     }
 
 }

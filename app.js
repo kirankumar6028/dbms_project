@@ -211,7 +211,7 @@ app.get("/bookTickets", (req, res) => {
 
     }
 
-
+    sql += " and b.seats_available!=0";
     console.log(sql);
     pool.executeQuery(sql, function(err, data) {
         source = null;
@@ -230,11 +230,11 @@ app.get("/bookTickets", (req, res) => {
 
 
 app.get("/bookTours", (req, res) => {
-    //  select * from tours where start_date>'2020-12-31'
     var today = new Date();
     today = today.getFullYear() + "-" 
-                + String(today.getMonth()+1).padStart(2,'0') + "-" + String(today.getDate()).padStart(2,'0');
-    var sql = sqlhelper.selectCommand("tours", null, "start_date>'" + today + "'");
+        + String(today.getMonth() + 1).padStart(2, '0') + "-" + String(today.getDate()).padStart(2, '0');
+    var sql = "select t.*, l.places from tours t left join (select tour_id, group_concat(locations separator ', ') as places from tour_locations group by tour_id) as l on t.tour_id=l.tour_id where t.start_date>'" + today + "'";
+    sql += " and t.seats_available!=0";
     console.log(sql);
     pool.executeQuery(sql, function(err, result) {
             tours = result;
@@ -298,13 +298,10 @@ app.get("/addBus", (req, res) => {
 // Opens add tours form
 
 app.get("/addTours", (req, res) => {
-    // select t.*, group_concat(l.locations separator ', ') as places 
-            // from tours t,tour_locations l where t.tour_id=l.tour_id group by l.tour_id
-    var sql = sqlhelper.selectCommand("tours t,tour_locations l", 
-                                ["t.*", "t.start_date as extra", "group_concat(l.locations separator ', ') as places"], 
-                                "t.tour_id=l.tour_id group by l.tour_id");
+    var sql = "select t.*, t.start_date as extra, l.places from tours t left join (select tour_id, group_concat(locations separator ', ') as places from tour_locations group by tour_id) as l on t.tour_id=l.tour_id";
     console.log(sql);
-    pool.executeQuery(sql, function(err, data) {
+    pool.executeQuery(sql, function (err, data) {
+        data = sqlhelper.replaceNullValue(data, ["places"]);
        data = sqlhelper.getShortenedDate(data, ["extra"]);
        data = sqlhelper.getDateHelper(data, ["start_date"]);
         res.render("addToursForm", {data});
@@ -368,18 +365,21 @@ app.post("/addTours", (req, res) => {
     console.log(sql);
     pool.executeQuery(sql, function(err, result) {
         var a = [];
-        if(String(placeIncluded).includes(","))
+        if(String(placeIncluded).includes(",")) {
             a = String(placeIncluded).split(",");
+            a = a.map(x => x.trim());
+        }
         else a = [placeIncluded];
+        var sql = '';
         for(let i=0; i<a.length; i++) {
             if(!a[i]) continue;
             // insert into tour_locations values ('tourId', 'a[i]')
-            sql = sqlhelper.insertCommand("tour_locations", [tourId, a[i]]);
-            console.log(sql);
-            pool.executeQuery(sql, function(err, result) {
-                if(i==a.length-1) res.redirect("/addTours");
-            });
+            sql += sqlhelper.insertCommand("tour_locations", [tourId, a[i]]) + '; ';
         }
+        console.log(sql);
+        pool.executeQuery(sql, function(err, result) {
+            res.redirect("/addTours");
+        });
     });
 })
 
@@ -657,18 +657,21 @@ app.post("/updateTours", (req, res) => {
         console.log(sql);
         pool.executeQuery(sql, function(err, resultDelete) {
             var a = [];
-            if(String(placeIncluded).includes(","))
+            if(String(placeIncluded).includes(",")) {
                 a = String(placeIncluded).split(",");
+                a = a.map(x => x.trim());
+            }
             else a = [placeIncluded];
+            var sql = '';
             for(let i=0; i<a.length; i++) {
                 if(!a[i]) continue;
                 // insert into tour_locations values ('tourId', 'a[i]')
-                sql = sqlhelper.insertCommand("tour_locations", [tourId, a[i]]);
-                console.log(sql);
-                pool.executeQuery(sql, function(err, result) {
-                    if(i==a.length-1) res.redirect("/addTours");
-                });
+                sql += sqlhelper.insertCommand("tour_locations", [tourId, a[i]]) + '; ';
             }
+            console.log(sql);
+            pool.executeQuery(sql, function(err, result) {
+                res.redirect("/addTours");
+            });
         })
     });
 })
